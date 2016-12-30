@@ -1,4 +1,4 @@
-module Search.State exposing (..)
+module Search.State exposing (init, update, subscriptions)
 
 import Search.Types exposing (..)
 
