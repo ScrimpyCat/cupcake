@@ -1,7 +1,10 @@
 module Search.View exposing (render)
 
 import Html exposing (..)
-import Types exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onInput)
+import String
+import Search.Types exposing (..)
 
 
 render : Model -> Html Msg
