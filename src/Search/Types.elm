@@ -20,3 +20,4 @@ type alias Model =
 
 type Msg
     = Query String
+    | Select Filter

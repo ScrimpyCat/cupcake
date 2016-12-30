@@ -19,6 +19,9 @@ update msg model =
         Query query ->
             ( { model | query = query }, Cmd.none )
 
+        Select filter ->
+            ( { model | query = "", suggestions = [] }, Cmd.none )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
