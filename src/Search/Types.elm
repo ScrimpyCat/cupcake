@@ -1,15 +1,6 @@
 module Search.Types exposing (..)
 
-
-type Category
-    = Allergen
-    | Cuisine
-    | Diet
-    | Ingredient
-
-
-type Filter
-    = Filter Category String
+import Filter exposing (..)
 
 
 type alias Model =
