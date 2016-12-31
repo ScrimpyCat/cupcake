@@ -32,4 +32,4 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Sub.batch [ Sub.map Search (Search.subscriptions model.search) ]
