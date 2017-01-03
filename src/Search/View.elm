@@ -10,9 +10,23 @@ import Filter exposing (..)
 render : Model -> Html Msg
 render model =
     div []
-        [ input [ type_ "text", placeholder "Find some food!", onInput Query, value model.query ] []
+        [ viewSearchBar model.query
         , viewSuggestions model.suggestions
         ]
+
+
+viewSearchBar : Maybe String -> Html Msg
+viewSearchBar query =
+    let
+        term =
+            case model.query of
+                Just query ->
+                    query
+
+                Nothing ->
+                    ""
+    in
+        input [ type_ "text", placeholder "Find some food!", onInput Query, value term ]
 
 
 viewSuggestions : List Filter -> Html Msg

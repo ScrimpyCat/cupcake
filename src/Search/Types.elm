@@ -4,7 +4,7 @@ import Filter exposing (..)
 
 
 type alias Model =
-    { query : String
+    { query : Maybe String
     , suggestions : List Filter
     }
 

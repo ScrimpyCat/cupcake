@@ -11,17 +11,17 @@ init =
 
 model : Model
 model =
-    Model "" []
+    Model Nothing []
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Query query ->
-            ( { model | query = query }, Cmd.none )
+            ( { model | query = Just query }, Cmd.none )
 
         Select filter ->
-            ( { model | query = "", suggestions = [] }, Cmd.none )
+            ( { model | query = Nothing, suggestions = [] }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
