@@ -1,7 +1,6 @@
 module Search.State exposing (init, update, subscriptions)
 
 import Search.Types exposing (..)
-import Filter exposing (..)
 
 
 init : ( Model, Cmd Msg )
@@ -11,7 +10,7 @@ init =
 
 model : Model
 model =
-    Model "" []
+    Model "" [] []
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -21,7 +20,7 @@ update msg model =
             ( { model | query = query }, Cmd.none )
 
         Select filter ->
-            ( { model | query = "", suggestions = [] }, Cmd.none )
+            ( { model | query = "", suggestions = [], criteria = filter :: model.criteria }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg

@@ -4,14 +4,19 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 import Search.Types exposing (..)
-import Filter exposing (..)
 
 
 render : Model -> Html Msg
 render model =
     div []
-        [ input [ type_ "text", placeholder "Find some food!", onInput Query, value model.query ] []
-        , viewSuggestions model.suggestions
+        [ div []
+            [ input [ type_ "text", placeholder "Find some food!", onInput Query, value model.query ] []
+            , viewSuggestions model.suggestions
+            ]
+        , div
+            []
+            [ viewCriteria model.criteria
+            ]
         ]
 
 
@@ -26,5 +31,20 @@ viewSuggestions suggestions =
                             [ dt [ onClick (Select filter) ] [ text query ], dd [ onClick (Select filter) ] [ text (toString category) ] ]
                 )
                 suggestions
+    in
+        dl [] items
+
+
+viewCriteria : List Filter -> Html Msg
+viewCriteria criteria =
+    let
+        items =
+            List.concatMap
+                (\filter ->
+                    case filter of
+                        Filter category query ->
+                            [ dt [] [ text query ], dd [] [ text (toString category) ] ]
+                )
+                criteria
     in
         dl [] items

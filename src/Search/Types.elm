@@ -1,11 +1,21 @@
 module Search.Types exposing (..)
 
-import Filter exposing (..)
+
+type Category
+    = Allergen
+    | Cuisine
+    | Diet
+    | Ingredient
+
+
+type Filter
+    = Filter Category String
 
 
 type alias Model =
     { query : String
     , suggestions : List Filter
+    , criteria : List Filter
     }
 
 
