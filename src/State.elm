@@ -3,6 +3,8 @@ module State exposing (..)
 import Types exposing (..)
 import Search.State as Search
 import Filters.State as Filters
+import Search.Types
+import Filters.Types
 
 
 init : ( Model, Cmd Msg )
@@ -34,8 +36,22 @@ update msg model =
             let
                 ( searchModel, searchEffects ) =
                     Search.update searchMsg model.search
+
+                ( filtersModel, filtersEffects ) =
+                    case searchMsg of
+                        Search.Types.Select filter ->
+                            Filters.update (Filters.Types.Add filter) model.filters
+
+                        _ ->
+                            ( model.filters, Cmd.none )
+
+                effects =
+                    Cmd.batch
+                        [ Cmd.map Search searchEffects
+                        , Cmd.map Filters filtersEffects
+                        ]
             in
-                ( { model | search = searchModel }, (Cmd.map Search searchEffects) )
+                ( { model | search = searchModel, filters = filtersModel }, effects )
 
         Filters filterMsg ->
             let
