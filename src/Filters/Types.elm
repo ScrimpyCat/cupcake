@@ -3,10 +3,15 @@ module Filters.Types exposing (..)
 import Filter exposing (..)
 
 
-type alias Model =
-    { filters : Maybe (List Filter)
-    }
+type Criteria
+    = Criteria Filter Bool
+
+
+type Model
+    = Empty
+    | FilteringCriteria (List Criteria)
 
 
 type Msg
     = Add Filter
+    | Toggle Filter

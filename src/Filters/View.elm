@@ -9,27 +9,27 @@ import Filter exposing (..)
 
 render : Model -> Html Msg
 render model =
-    case model.filters of
-        Nothing ->
+    case model of
+        Empty ->
             div []
                 [ viewFilters []
                 ]
 
-        Just filters ->
+        FilteringCriteria filters ->
             div []
                 [ viewFilters filters
                 ]
 
 
-viewFilters : List Filter -> Html Msg
+viewFilters : List Criteria -> Html Msg
 viewFilters filters =
     let
         items =
             List.concatMap
-                (\filter ->
+                (\(Criteria filter active) ->
                     case filter of
                         Filter category query ->
-                            [ dt [] [ text query ], dd [] [ text (toString category) ] ]
+                            [ dt [ onClick (Toggle filter) ] [ text query ], dd [ onClick (Toggle filter) ] [ text (toString category) ] ]
                 )
                 filters
     in

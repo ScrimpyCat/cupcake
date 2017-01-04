@@ -11,19 +11,38 @@ init =
 
 model : Model
 model =
-    Model Nothing
+    Empty
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Add filter ->
-            case model.filters of
-                Nothing ->
-                    ( { model | filters = Just [ filter ] }, Cmd.none )
+            case model of
+                Empty ->
+                    ( FilteringCriteria [ Criteria filter True ], Cmd.none )
 
-                Just filters ->
-                    ( { model | filters = Just (filter :: filters) }, Cmd.none )
+                FilteringCriteria filters ->
+                    ( FilteringCriteria ((Criteria filter True) :: filters), Cmd.none )
+
+        Toggle filter ->
+            case model of
+                Empty ->
+                    ( Empty, Cmd.none )
+
+                FilteringCriteria filters ->
+                    ( FilteringCriteria
+                        (List.map
+                            (\(Criteria currentFilter active) ->
+                                if currentFilter == filter then
+                                    (Criteria currentFilter (not active))
+                                else
+                                    (Criteria currentFilter active)
+                            )
+                            filters
+                        )
+                    , Cmd.none
+                    )
 
 
 subscriptions : Model -> Sub Msg
