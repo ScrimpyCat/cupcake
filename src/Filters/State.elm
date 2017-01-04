@@ -11,14 +11,19 @@ init =
 
 model : Model
 model =
-    Model []
+    Model Nothing
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Add filter ->
-            ( { model | filters = filter :: model.filters }, Cmd.none )
+            case model.filters of
+                Nothing ->
+                    ( { model | filters = Just [ filter ] }, Cmd.none )
+
+                Just filters ->
+                    ( { model | filters = Just (filter :: filters) }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg

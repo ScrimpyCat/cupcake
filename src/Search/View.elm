@@ -9,10 +9,29 @@ import Filter exposing (..)
 
 render : Model -> Html Msg
 render model =
-    div []
-        [ input [ type_ "text", placeholder "Find some food!", onInput Query, value model.query ] []
-        , viewSuggestions model.suggestions
-        ]
+    case model of
+        Empty ->
+            div []
+                [ viewSearchBar ""
+                , viewSuggestions []
+                ]
+
+        Autocomplete query Nothing ->
+            div []
+                [ viewSearchBar query
+                , viewSuggestions []
+                ]
+
+        Autocomplete query (Just suggestions) ->
+            div []
+                [ viewSearchBar query
+                , viewSuggestions suggestions
+                ]
+
+
+viewSearchBar : String -> Html Msg
+viewSearchBar term =
+    input [ type_ "text", placeholder "Find some food!", onInput Query, value term ] []
 
 
 viewSuggestions : List Filter -> Html Msg

@@ -11,17 +11,29 @@ init =
 
 model : Model
 model =
-    Model "" []
+    Empty
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Query query ->
-            ( { model | query = query }, Cmd.none )
+            case model of
+                Empty ->
+                    ( Autocomplete query Nothing, Cmd.none )
+
+                Autocomplete _ suggestions ->
+                    {- Possibly pass the old suggestions state to the request
+                       to the server query. So it can either apply temporary
+                       filtering to the previous results while waiting for
+                       new results to come in. Or possibly just remove it
+                       entirely, in which case this case statement could be
+                       replaced with the same result.
+                    -}
+                    ( Autocomplete query Nothing, Cmd.none )
 
         Select filter ->
-            ( { model | query = "", suggestions = [] }, Cmd.none )
+            ( Empty, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg

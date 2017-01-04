@@ -4,7 +4,7 @@ import Filter exposing (..)
 
 
 type alias Model =
-    { filters : List Filter
+    { filters : Maybe (List Filter)
     }
 
 
