@@ -9,9 +9,16 @@ import Filter exposing (..)
 
 render : Model -> Html Msg
 render model =
-    div []
-        [ viewFilters model.filters
-        ]
+    case model.filters of
+        Nothing ->
+            div []
+                [ viewFilters []
+                ]
+
+        Just filters ->
+            div []
+                [ viewFilters filters
+                ]
 
 
 viewFilters : List Filter -> Html Msg
