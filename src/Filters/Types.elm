@@ -15,3 +15,4 @@ type Model
 type Msg
     = Add Filter
     | Toggle Filter
+    | Remove Filter

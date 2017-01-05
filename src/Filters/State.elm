@@ -44,6 +44,20 @@ update msg model =
                     , Cmd.none
                     )
 
+        Remove filter ->
+            case model of
+                Empty ->
+                    ( Empty, Cmd.none )
+
+                FilteringCriteria filters ->
+                    ( FilteringCriteria
+                        (List.filter
+                            (\(Criteria currentFilter _) -> currentFilter /= filter)
+                            filters
+                        )
+                    , Cmd.none
+                    )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =

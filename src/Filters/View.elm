@@ -29,7 +29,7 @@ viewFilters filters =
                 (\(Criteria filter active) ->
                     case filter of
                         Filter category query ->
-                            [ dt [ onClick (Toggle filter) ] [ text query ], dd [ onClick (Toggle filter) ] [ text (toString category) ] ]
+                            [ dt [ onClick (Toggle filter) ] [ text query, button [ onClick (Remove filter) ] [ text "Remove" ] ], dd [ onClick (Toggle filter) ] [ text (toString category) ] ]
                 )
                 filters
     in
