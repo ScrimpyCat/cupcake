@@ -20,6 +20,9 @@ model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        Query "" ->
+            ( Empty, Cmd.none )
+
         Query query ->
             case model of
                 Empty ->
