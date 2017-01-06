@@ -48,6 +48,7 @@ update msg model =
                                 , List.map (\name -> Filter Cuisine name) suggestions.cuisines
                                 , List.map (\name -> Filter Allergen name) suggestions.allergens
                                 , List.map (\name -> Filter Diet name) suggestions.diets
+                                , List.map (\name -> Filter RegionalStyle name) suggestions.regionalStyles
                                 ]
                     in
                         ( Autocomplete query (Just filters), Cmd.none )
@@ -78,6 +79,7 @@ getSuggestions query =
                             cuisines(name: $term) { name }
                             allergens(name: $term) { name }
                             diets(name: $term) { name }
+                            regions(find: $term) { style }
                         }
                         """
                 , expect = Http.expectJson decodeSuggestions
@@ -92,18 +94,20 @@ decodeSuggestions : Json.Decode.Decoder FilterSuggestions
 decodeSuggestions =
     let
         fields =
-            Json.Decode.map4
-                (\ingredients cuisines allergens diets ->
+            Json.Decode.map5
+                (\ingredients cuisines allergens diets regionalStyles ->
                     { ingredients = ingredients
                     , cuisines = cuisines
                     , allergens = allergens
                     , diets = diets
+                    , regionalStyles = regionalStyles
                     }
                 )
                 (Json.Decode.field "ingredients" (Json.Decode.list (Json.Decode.field "name" Json.Decode.string)))
                 (Json.Decode.field "cuisines" (Json.Decode.list (Json.Decode.field "name" Json.Decode.string)))
                 (Json.Decode.field "allergens" (Json.Decode.list (Json.Decode.field "name" Json.Decode.string)))
                 (Json.Decode.field "diets" (Json.Decode.list (Json.Decode.field "name" Json.Decode.string)))
+                (Json.Decode.field "regions" (Json.Decode.list (Json.Decode.field "style" Json.Decode.string)))
     in
         Json.Decode.field "data" fields
 

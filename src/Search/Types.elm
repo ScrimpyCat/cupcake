@@ -14,6 +14,7 @@ type alias FilterSuggestions =
     , cuisines : List String
     , allergens : List String
     , diets : List String
+    , regionalStyles : List String
     }
 
 
