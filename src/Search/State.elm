@@ -88,7 +88,7 @@ getPrices query =
                         base =
                             case String.toFloat match of
                                 Ok value ->
-                                    value
+                                    truncate value
 
                                 Err _ ->
                                     0
