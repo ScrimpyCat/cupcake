@@ -5,6 +5,7 @@ import Filter exposing (..)
 import Http
 import Json.Decode
 import Time
+import Regex
 
 
 init : ( Model, Cmd Msg )
@@ -52,6 +53,7 @@ update msg model =
                                 , List.map (\name -> Filter Allergen name) suggestions.allergens
                                 , List.map (\name -> Filter Diet name) suggestions.diets
                                 , List.map (\name -> Filter RegionalStyle name) suggestions.regionalStyles
+                                , List.map (\name -> Filter Price name) (getPrices query)
                                 ]
                     in
                         ( Autocomplete query (Just filters), Cmd.none )
@@ -61,6 +63,49 @@ update msg model =
 
         NewSuggestions (Err r) ->
             ( model, Cmd.none )
+
+
+currencySymbols : List String
+currencySymbols =
+    [ "$"
+    ]
+
+
+getPrices : String -> List String
+getPrices query =
+    --TODO: Fix regex to be less greedy
+    let
+        prices =
+            Regex.find (Regex.AtMost 2) (Regex.regex ("(?![" ++ (List.foldr (++) "" currencySymbols) ++ "])\\d+\\.?\\d*")) query
+
+        ranges =
+            case prices of
+                [ a, b ] ->
+                    [ a.match ++ " - " ++ b.match ]
+
+                [ { match } ] ->
+                    let
+                        base =
+                            case String.toFloat match of
+                                Ok value ->
+                                    value
+
+                                Err _ ->
+                                    0
+                    in
+                        --TODO: Don't do subtractions if base will be below 0
+                        [ match
+                        , "0 - " ++ match
+                        , (toString (base - 20)) ++ " - " ++ match
+                        , (toString (base - 10)) ++ " - " ++ match
+                        , match ++ " - " ++ (toString (base + 10))
+                        , match ++ " - " ++ (toString (base + 20))
+                        ]
+
+                _ ->
+                    []
+    in
+        ranges
 
 
 getSuggestions : String -> Cmd Msg

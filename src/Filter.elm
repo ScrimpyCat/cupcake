@@ -6,6 +6,7 @@ type Category
     | Cuisine
     | Diet
     | Ingredient
+    | Price
     | RegionalStyle
 
 
