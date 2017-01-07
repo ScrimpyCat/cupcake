@@ -48,7 +48,8 @@ update msg model =
                     let
                         filters =
                             List.concat
-                                [ List.map (\name -> Filter Ingredient name) suggestions.ingredients
+                                [ [ (Filter Name query) ]
+                                , List.map (\name -> Filter Ingredient name) suggestions.ingredients
                                 , List.map (\name -> Filter Cuisine name) suggestions.cuisines
                                 , List.map (\name -> Filter Allergen name) suggestions.allergens
                                 , List.map (\name -> Filter Diet name) suggestions.diets
