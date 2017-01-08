@@ -117,8 +117,7 @@ getSuggestions query =
             Http.request
                 { method = "POST"
                 , headers =
-                    [ (Http.header "Accept-Language" "en")
-                    , (Http.header "Accept" "application/json")
+                    [ (Http.header "Accept" "application/json")
                     ]
                 , url = "http://localhost:4000?variables={\"term\":\"" ++ query ++ "\"}"
                 , body =
