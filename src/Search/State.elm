@@ -42,10 +42,18 @@ update msg model =
         Select filter ->
             ( Empty, Cmd.none )
 
-        NewSuggestions (Ok suggestions) ->
+        NewSuggestions response ->
             case model of
                 Autocomplete query _ ->
                     let
+                        suggestions =
+                            case response of
+                                Ok suggestions ->
+                                    suggestions
+
+                                Err _ ->
+                                    FilterSuggestions [] [] [] [] []
+
                         filters =
                             List.concat
                                 [ [ (Filter Name query) ]
@@ -61,9 +69,6 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none )
-
-        NewSuggestions (Err r) ->
-            ( model, Cmd.none )
 
 
 currencySymbols : List String
