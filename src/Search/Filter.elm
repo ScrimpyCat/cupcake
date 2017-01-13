@@ -1,4 +1,4 @@
-module Filter exposing (..)
+module Search.Filter exposing (..)
 
 
 type Category

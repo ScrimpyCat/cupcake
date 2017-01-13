@@ -1,6 +1,6 @@
-module Filters.Types exposing (..)
+module Search.Criteria.Types exposing (..)
 
-import Filter exposing (..)
+import Search.Filter exposing (..)
 
 
 type Criteria

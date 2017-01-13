@@ -1,24 +1,15 @@
 module Search.Types exposing (..)
 
-import Filter exposing (..)
-import Http
+import Search.Finder.Types as Finder
+import Search.Criteria.Types as Criteria
 
 
-type Model
-    = Empty
-    | Autocomplete String (Maybe (List Filter))
-
-
-type alias FilterSuggestions =
-    { ingredients : List String
-    , cuisines : List String
-    , allergens : List String
-    , diets : List String
-    , regionalStyles : List String
+type alias Model =
+    { finder : Finder.Model
+    , criteria : Criteria.Model
     }
 
 
 type Msg
-    = Query String
-    | Select Filter
-    | NewSuggestions (Result Http.Error FilterSuggestions)
+    = Finder Finder.Msg
+    | Criteria Criteria.Msg

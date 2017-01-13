@@ -1,10 +1,10 @@
-module Filters.View exposing (render)
+module Search.Criteria.View exposing (render)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
-import Filters.Types exposing (..)
-import Filter exposing (..)
+import Search.Criteria.Types exposing (..)
+import Search.Filter exposing (..)
 
 
 render : Model -> Html Msg

@@ -1,7 +1,7 @@
-module Filters.State exposing (init, update, subscriptions)
+module Search.Criteria.State exposing (init, update, subscriptions)
 
-import Filters.Types exposing (..)
-import Filter exposing (..)
+import Search.Criteria.Types exposing (..)
+import Search.Filter exposing (..)
 
 
 init : ( Model, Cmd Msg )
