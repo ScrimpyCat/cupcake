@@ -7,6 +7,7 @@ import Search.Results.State as Results
 import Search.Finder.Types
 import Search.Criteria.Types
 import Search.Results.Types
+import Util exposing (..)
 
 
 init : ( Model, Cmd Msg )
@@ -43,29 +44,25 @@ update msg model =
             let
                 ( finderModel, finderEffects ) =
                     Finder.update finderMsg model.finder
-
-                ( criteriaModel, criteriaEffects ) =
-                    case finderMsg of
-                        Search.Finder.Types.Select filter ->
-                            Criteria.update (Search.Criteria.Types.Add filter) model.criteria
-
-                        _ ->
-                            ( model.criteria, Cmd.none )
-
-                effects =
-                    Cmd.batch
-                        [ Cmd.map Finder finderEffects
-                        , Cmd.map Criteria criteriaEffects
-                        ]
             in
-                ( { model | finder = finderModel, criteria = criteriaModel }, effects )
+                ( { model | finder = finderModel }, (Cmd.map Finder finderEffects) )
+                    |> forward finderMsg
+                        (\msg model ->
+                            case msg of
+                                Search.Finder.Types.Select filter ->
+                                    update (Criteria (Search.Criteria.Types.Add filter)) model
+
+                                _ ->
+                                    ( model, Cmd.none )
+                        )
 
         Criteria criteriaMsg ->
             let
                 ( criteriaModel, criteriaEffects ) =
                     Criteria.update criteriaMsg model.criteria
             in
-                ( { model | criteria = criteriaModel }, (Cmd.map Criteria criteriaEffects) )
+                ( { model | criteria = criteriaModel }, Cmd.map Criteria criteriaEffects )
+                    |> forward (Results (Search.Results.Types.Find criteriaModel)) update
 
         Results resultsMsg ->
             let
