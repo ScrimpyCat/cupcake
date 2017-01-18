@@ -41,7 +41,7 @@ viewSuggestions suggestions =
             List.concatMap
                 (\filter ->
                     case filter of
-                        Filter category query ->
+                        Filter category ( query, _ ) ->
                             [ dt [ onClick (Select filter) ] [ text query ], dd [ onClick (Select filter) ] [ text (toString category) ] ]
                 )
                 suggestions

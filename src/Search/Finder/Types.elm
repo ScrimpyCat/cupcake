@@ -10,11 +10,11 @@ type Model
 
 
 type alias FilterSuggestions =
-    { ingredients : List String
-    , cuisines : List String
-    , allergens : List String
-    , diets : List String
-    , regionalStyles : List String
+    { ingredients : List ( String, Maybe ID )
+    , cuisines : List ( String, Maybe ID )
+    , allergens : List ( String, Maybe ID )
+    , diets : List ( String, Maybe ID )
+    , regionalStyles : List ( String, Maybe ID )
     }
 
 

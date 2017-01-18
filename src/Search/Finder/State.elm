@@ -56,7 +56,7 @@ update msg model =
 
                         filters =
                             List.concat
-                                [ [ (Filter Name query) ]
+                                [ [ (Filter Name ( query, Nothing )) ]
                                 , List.map (\name -> Filter Ingredient name) suggestions.ingredients
                                 , List.map (\name -> Filter Cuisine name) suggestions.cuisines
                                 , List.map (\name -> Filter Allergen name) suggestions.allergens
@@ -77,7 +77,7 @@ currencySymbols =
     ]
 
 
-getPrices : String -> List String
+getPrices : String -> List ( String, Maybe ID )
 getPrices query =
     --TODO: Fix regex to be less greedy
     let
@@ -87,7 +87,7 @@ getPrices query =
         ranges =
             case prices of
                 [ a, b ] ->
-                    [ a.match ++ " - " ++ b.match ]
+                    [ ( a.match ++ " - " ++ b.match, Nothing ) ]
 
                 [ { match } ] ->
                     let
@@ -100,12 +100,12 @@ getPrices query =
                                     0
                     in
                         --TODO: Don't do subtractions if base will be below 0
-                        [ match
-                        , "0 - " ++ match
-                        , (toString (base - 20)) ++ " - " ++ match
-                        , (toString (base - 10)) ++ " - " ++ match
-                        , match ++ " - " ++ (toString (base + 10))
-                        , match ++ " - " ++ (toString (base + 20))
+                        [ ( match, Nothing )
+                        , ( "0 - " ++ match, Nothing )
+                        , ( (toString (base - 20)) ++ " - " ++ match, Nothing )
+                        , ( (toString (base - 10)) ++ " - " ++ match, Nothing )
+                        , ( match ++ " - " ++ (toString (base + 10)), Nothing )
+                        , ( match ++ " - " ++ (toString (base + 20)), Nothing )
                         ]
 
                 _ ->
@@ -129,11 +129,11 @@ getSuggestions query =
                     Http.stringBody "application/graphql"
                         """
                         query suggestions($term: String!) {
-                            ingredients(name: $term) { name }
-                            cuisines(name: $term) { name }
-                            allergens(name: $term) { name }
-                            diets(name: $term) { name }
-                            regions(find: $term) { style }
+                            ingredients(name: $term) { id name }
+                            cuisines(name: $term) { id name }
+                            allergens(name: $term) { id name }
+                            diets(name: $term) { id name }
+                            regions(find: $term) { id style }
                         }
                         """
                 , expect = Http.expectJson decodeSuggestions
@@ -142,6 +142,11 @@ getSuggestions query =
                 }
     in
         Http.send NewSuggestions request
+
+
+decodeFilterField : String -> Json.Decode.Decoder ( String, Maybe ID )
+decodeFilterField name =
+    (Json.Decode.map2 (\id string -> ( string, Just id )) (Json.Decode.field "id" Json.Decode.string) (Json.Decode.field name Json.Decode.string))
 
 
 decodeSuggestions : Json.Decode.Decoder FilterSuggestions
@@ -157,11 +162,11 @@ decodeSuggestions =
                     , regionalStyles = regionalStyles
                     }
                 )
-                (Json.Decode.field "ingredients" (Json.Decode.list (Json.Decode.field "name" Json.Decode.string)))
-                (Json.Decode.field "cuisines" (Json.Decode.list (Json.Decode.field "name" Json.Decode.string)))
-                (Json.Decode.field "allergens" (Json.Decode.list (Json.Decode.field "name" Json.Decode.string)))
-                (Json.Decode.field "diets" (Json.Decode.list (Json.Decode.field "name" Json.Decode.string)))
-                (Json.Decode.field "regions" (Json.Decode.list (Json.Decode.field "style" Json.Decode.string)))
+                (Json.Decode.field "ingredients" (Json.Decode.list (decodeFilterField "name")))
+                (Json.Decode.field "cuisines" (Json.Decode.list (decodeFilterField "name")))
+                (Json.Decode.field "allergens" (Json.Decode.list (decodeFilterField "name")))
+                (Json.Decode.field "diets" (Json.Decode.list (decodeFilterField "name")))
+                (Json.Decode.field "regions" (Json.Decode.list (decodeFilterField "style")))
     in
         Json.Decode.field "data" fields
 

@@ -87,7 +87,7 @@ convertFiltersToVariables filters =
     let
         ( allergens, cuisines, diets, ingredients, name, prices, regionalStyles ) =
             List.foldl
-                (\(Filter category phrase) ( allergens, cuisines, diets, ingredients, name, prices, regionalStyles ) ->
+                (\(Filter category ( phrase, _ )) ( allergens, cuisines, diets, ingredients, name, prices, regionalStyles ) ->
                     let
                         term =
                             "\"" ++ phrase ++ "\""

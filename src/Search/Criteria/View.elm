@@ -28,7 +28,7 @@ viewFilters filters =
             List.concatMap
                 (\(Criteria filter active) ->
                     case filter of
-                        Filter category query ->
+                        Filter category ( query, _ ) ->
                             [ dt [ onClick (Toggle filter) ] [ text query, button [ onClick (Remove filter) ] [ text "Remove" ] ], dd [ onClick (Toggle filter) ] [ text (toString category) ] ]
                 )
                 filters

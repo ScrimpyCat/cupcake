@@ -11,5 +11,9 @@ type Category
     | RegionalStyle
 
 
+type alias ID =
+    String
+
+
 type Filter
-    = Filter Category String
+    = Filter Category ( String, Maybe ID )
