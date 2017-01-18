@@ -8,5 +8,14 @@ type Model
     = Empty
 
 
+type FoodItem
+    = FoodItem String
+
+
+type alias FoodItems =
+    List FoodItem
+
+
 type Msg
     = Find Criteria.Model
+    | NewResults (Result Http.Error FoodItems)
