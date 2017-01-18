@@ -77,6 +77,11 @@ convertTermsToVariable var terms =
             var ++ ":[" ++ (String.join "," terms) ++ "]"
 
 
+convertTermsToSubVariable : String -> List String -> List String
+convertTermsToSubVariable var terms =
+    List.map (\term -> "{" ++ (convertTermToVariable var term) ++ "}") terms
+
+
 formatIdField : List String -> List String
 formatIdField terms =
     List.map (\term -> "{\"id\":" ++ term ++ "}") terms
@@ -122,16 +127,15 @@ convertFiltersToVariables filters =
                 ( [], [], [], [], "", [], [] )
                 filters
     in
-        --TODO: format price and region fields
+        --TODO: format price
         String.join ","
             (List.filter (\argument -> (String.length argument) > 0)
                 [ (convertTermsToVariable "\"allergens\"" (formatIdField allergens))
-                , (convertTermsToVariable "\"cuisines\"" (formatIdField cuisines))
+                , (convertTermsToVariable "\"cuisines\"" ((formatIdField cuisines) ++ (convertTermsToSubVariable "\"region\"" (formatIdField regionalStyles))))
                 , (convertTermsToVariable "\"diets\"" (formatIdField diets))
                 , (convertTermsToVariable "\"ingredients\"" (formatIdField ingredients))
                 , (convertTermToVariable "\"name\"" name)
                 , (convertTermsToVariable "\"prices\"" prices)
-                , (convertTermsToVariable "\"regionalStyles\"" regionalStyles)
                 ]
             )
 
