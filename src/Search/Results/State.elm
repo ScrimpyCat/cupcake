@@ -77,9 +77,9 @@ convertTermsToVariable var terms =
             var ++ ":[" ++ (String.join "," terms) ++ "]"
 
 
-formatNameField : List String -> List String
-formatNameField terms =
-    List.map (\term -> "{\"name\":" ++ term ++ "}") terms
+formatIdField : List String -> List String
+formatIdField terms =
+    List.map (\term -> "{\"id\":" ++ term ++ "}") terms
 
 
 convertFiltersToVariables : List Filter -> String
@@ -87,10 +87,15 @@ convertFiltersToVariables filters =
     let
         ( allergens, cuisines, diets, ingredients, name, prices, regionalStyles ) =
             List.foldl
-                (\(Filter category ( phrase, _ )) ( allergens, cuisines, diets, ingredients, name, prices, regionalStyles ) ->
+                (\(Filter category ( phrase, id )) ( allergens, cuisines, diets, ingredients, name, prices, regionalStyles ) ->
                     let
                         term =
-                            "\"" ++ phrase ++ "\""
+                            case id of
+                                Nothing ->
+                                    "\"" ++ phrase ++ "\""
+
+                                Just index ->
+                                    "\"" ++ index ++ "\""
                     in
                         case category of
                             Allergen ->
@@ -120,10 +125,10 @@ convertFiltersToVariables filters =
         --TODO: format price and region fields
         String.join ","
             (List.filter (\argument -> (String.length argument) > 0)
-                [ (convertTermsToVariable "\"allergens\"" (formatNameField allergens))
-                , (convertTermsToVariable "\"cuisines\"" (formatNameField cuisines))
-                , (convertTermsToVariable "\"diets\"" (formatNameField diets))
-                , (convertTermsToVariable "\"ingredients\"" (formatNameField ingredients))
+                [ (convertTermsToVariable "\"allergens\"" (formatIdField allergens))
+                , (convertTermsToVariable "\"cuisines\"" (formatIdField cuisines))
+                , (convertTermsToVariable "\"diets\"" (formatIdField diets))
+                , (convertTermsToVariable "\"ingredients\"" (formatIdField ingredients))
                 , (convertTermToVariable "\"name\"" name)
                 , (convertTermsToVariable "\"prices\"" prices)
                 , (convertTermsToVariable "\"regionalStyles\"" regionalStyles)
