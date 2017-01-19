@@ -6,6 +6,7 @@ import Search.Criteria.Types as Criteria
 import Http
 import Json.Decode
 import Time
+import Regex
 
 
 init : ( Model, Cmd Msg )
@@ -87,6 +88,33 @@ formatIdField terms =
     List.map (\term -> "{\"id\":" ++ term ++ "}") terms
 
 
+getCurrency : String
+getCurrency =
+    --TODO: Get currency based on current area they're searching for
+    "AUD"
+
+
+formatPriceField : List String -> List String
+formatPriceField terms =
+    List.filterMap
+        (\term ->
+            let
+                prices =
+                    Regex.find (Regex.AtMost 2) (Regex.regex ("\\d+\\.?\\d*")) term
+            in
+                case prices of
+                    [ min, max ] ->
+                        Just ("{\"currency\":\"" ++ getCurrency ++ "\",\"min\":\"" ++ min.match ++ "\",\"max\":\"" ++ max.match ++ "\"}")
+
+                    [ { match } ] ->
+                        Just ("{\"currency\":\"" ++ getCurrency ++ "\",\"min\":\"" ++ match ++ "\",\"max\":\"" ++ match ++ "\"}")
+
+                    _ ->
+                        Nothing
+        )
+        terms
+
+
 convertFiltersToVariables : List Filter -> String
 convertFiltersToVariables filters =
     let
@@ -135,7 +163,7 @@ convertFiltersToVariables filters =
                 , (convertTermsToVariable "\"diets\"" (formatIdField diets))
                 , (convertTermsToVariable "\"ingredients\"" (formatIdField ingredients))
                 , (convertTermToVariable "\"name\"" name)
-                , (convertTermsToVariable "\"prices\"" prices)
+                , (convertTermsToVariable "\"prices\"" (formatPriceField prices))
                 ]
             )
 
@@ -154,8 +182,8 @@ getResults filters =
                 , body =
                     Http.stringBody "application/graphql"
                         """
-                        query results($allergens: [AllergenInput], $cuisines: [CuisineInput], $diets: [DietInput], $ingredients: [IngredientInput], $name: String) {
-                            foods(allergens: $allergens, cuisines: $cuisines, diets: $diets, ingredients: $ingredients, name: $name) { name }
+                        query results($allergens: [AllergenInput], $cuisines: [CuisineInput], $diets: [DietInput], $ingredients: [IngredientInput], $name: String, $prices: [PriceRangeInput]) {
+                            foods(allergens: $allergens, cuisines: $cuisines, diets: $diets, ingredients: $ingredients, name: $name, prices: $prices) { name }
                         }
                         """
                 , expect = Http.expectJson decodeResults
