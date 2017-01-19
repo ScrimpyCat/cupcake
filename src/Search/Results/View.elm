@@ -12,3 +12,21 @@ render model =
         Empty ->
             div []
                 []
+
+        Results items ->
+            div []
+                [ viewFoodItems items
+                ]
+
+
+viewFoodItems : List FoodItem -> Html Msg
+viewFoodItems foods =
+    let
+        items =
+            List.map
+                (\(FoodItem name) ->
+                    li [] [ text name ]
+                )
+                foods
+    in
+        ol [] items

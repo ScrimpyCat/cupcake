@@ -6,16 +6,13 @@ import Http
 
 type Model
     = Empty
+    | Results (List FoodItem)
 
 
 type FoodItem
     = FoodItem String
 
 
-type alias FoodItems =
-    List FoodItem
-
-
 type Msg
     = Find Criteria.Model
-    | NewResults (Result Http.Error FoodItems)
+    | NewResults (Result Http.Error (List FoodItem))

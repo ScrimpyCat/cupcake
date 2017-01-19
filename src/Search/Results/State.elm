@@ -43,19 +43,11 @@ update msg model =
                     in
                         ( model, getResults activeFilters )
 
-        NewResults response ->
-            let
-                x =
-                    Debug.log "results: "
-                        (case response of
-                            Ok r ->
-                                r
+        NewResults (Ok results) ->
+            ( Results results, Cmd.none )
 
-                            Err _ ->
-                                [ FoodItem "" ]
-                        )
-            in
-                ( model, Cmd.none )
+        NewResults (Err _) ->
+            ( Empty, Cmd.none )
 
 
 convertTermToVariable : String -> String -> String
@@ -194,7 +186,7 @@ getResults filters =
         Http.send NewResults request
 
 
-decodeResults : Json.Decode.Decoder FoodItems
+decodeResults : Json.Decode.Decoder (List FoodItem)
 decodeResults =
     let
         fields =
