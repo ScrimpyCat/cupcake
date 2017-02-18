@@ -1,5 +1,7 @@
 module Session.Inactive.Register.Types exposing (..)
 
+import Http
+
 
 type alias Info =
     { email : String
@@ -22,3 +24,4 @@ type Msg
     | Password String
     | Name String
     | Mobile String
+    | NewSession (Result Http.Error String)
