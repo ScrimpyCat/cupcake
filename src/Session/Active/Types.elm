@@ -2,8 +2,9 @@ module Session.Active.Types exposing (..)
 
 
 type alias Model =
-    {}
+    { session : String
+    }
 
 
 type Msg
-    = Nothing
+    = NewSession String

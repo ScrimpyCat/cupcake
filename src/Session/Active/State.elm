@@ -11,14 +11,16 @@ init =
             Cmd.batch
                 []
     in
-        ( {}
+        ( { session = "" }
         , effects
         )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        NewSession session ->
+            ( { model | session = session }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
