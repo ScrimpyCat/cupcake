@@ -13,23 +13,13 @@ import Util exposing (..)
 init : ( Model, Cmd Msg )
 init =
     let
-        ( activeModel, activeEffects ) =
-            Active.init
-
         ( inactiveModel, inactiveEffects ) =
             Inactive.init
 
         effects =
-            Cmd.batch
-                [ Cmd.map Active activeEffects
-                , Cmd.map Inactive inactiveEffects
-                ]
+            Cmd.map Inactive inactiveEffects
     in
-        ( { active = activeModel
-          , inactive = inactiveModel
-          }
-        , effects
-        )
+        ( (InactiveSession inactiveModel), effects )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -38,16 +28,34 @@ update msg model =
         Active activeMsg ->
             let
                 ( activeModel, activeEffects ) =
-                    Active.update activeMsg model.active
+                    case model of
+                        ActiveSession activeModel ->
+                            Active.update activeMsg activeModel
+
+                        InactiveSession _ ->
+                            let
+                                ( activeModel, _ ) =
+                                    Active.init
+                            in
+                                Active.update activeMsg activeModel
             in
-                ( { model | active = activeModel }, (Cmd.map Active activeEffects) )
+                ( (ActiveSession activeModel), (Cmd.map Active activeEffects) )
 
         Inactive inactiveMsg ->
             let
                 ( inactiveModel, inactiveEffects ) =
-                    Inactive.update inactiveMsg model.inactive
+                    case model of
+                        ActiveSession _ ->
+                            let
+                                ( inactiveModel, _ ) =
+                                    Inactive.init
+                            in
+                                Inactive.update inactiveMsg inactiveModel
+
+                        InactiveSession inactiveModel ->
+                            Inactive.update inactiveMsg inactiveModel
             in
-                ( { model | inactive = inactiveModel }, Cmd.map Inactive inactiveEffects )
+                ( (InactiveSession inactiveModel), (Cmd.map Inactive inactiveEffects) )
                     |> forward inactiveMsg
                         (\msg model ->
                             case msg of
@@ -64,7 +72,9 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch
-        [ Sub.map Active (Active.subscriptions model.active)
-        , Sub.map Inactive (Inactive.subscriptions model.inactive)
-        ]
+    case model of
+        ActiveSession activeModel ->
+            Sub.map Active (Active.subscriptions activeModel)
+
+        InactiveSession inactiveModel ->
+            Sub.map Inactive (Inactive.subscriptions inactiveModel)

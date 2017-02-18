@@ -4,10 +4,9 @@ import Session.Active.Types as Active
 import Session.Inactive.Types as Inactive
 
 
-type alias Model =
-    { active : Active.Model
-    , inactive : Inactive.Model
-    }
+type Model
+    = InactiveSession Inactive.Model
+    | ActiveSession Active.Model
 
 
 type Msg

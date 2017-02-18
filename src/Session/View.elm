@@ -8,7 +8,9 @@ import Session.Inactive.View as Inactive
 
 render : Model -> Html Msg
 render model =
-    div []
-        [ map (\msg -> Active msg) (Active.render model.active)
-        , map (\msg -> Inactive msg) (Inactive.render model.inactive)
-        ]
+    case model of
+        ActiveSession activeModel ->
+            div [] [ map (\msg -> Active msg) (Active.render activeModel) ]
+
+        InactiveSession inactiveModel ->
+            div [] [ map (\msg -> Inactive msg) (Inactive.render inactiveModel) ]
