@@ -54,7 +54,7 @@ logoutAccount session =
 
 decodeSession : Json.Decode.Decoder String
 decodeSession =
-    Json.Decode.at [ "data", "logoutUser", "token" ] Json.Decode.string
+    Json.Decode.at [ "data", "logoutUser", "token" ] (Json.Decode.null "")
 
 
 subscriptions : Model -> Sub Msg
