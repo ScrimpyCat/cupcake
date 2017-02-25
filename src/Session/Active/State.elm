@@ -1,17 +1,25 @@
 module Session.Active.State exposing (..)
 
 import Session.Active.Types exposing (..)
+import Session.Active.Logout.State as Logout
+import Session.Active.Logout.Types
 import Util exposing (..)
 
 
 init : ( Model, Cmd Msg )
 init =
     let
+        ( logoutModel, logoutEffects ) =
+            Logout.init
+
         effects =
             Cmd.batch
-                []
+                [ Cmd.map Logout logoutEffects
+                ]
     in
-        ( { session = "" }
+        ( { session = ""
+          , logout = logoutModel
+          }
         , effects
         )
 
@@ -22,8 +30,16 @@ update msg model =
         NewSession session ->
             ( { model | session = session }, Cmd.none )
 
+        Logout logoutMsg ->
+            let
+                ( logoutModel, logoutEffects ) =
+                    Logout.update logoutMsg model.logout model.session
+            in
+                ( { model | logout = logoutModel }, (Cmd.map Logout logoutEffects) )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        []
+        [ Sub.map Logout (Logout.subscriptions model.logout)
+        ]
