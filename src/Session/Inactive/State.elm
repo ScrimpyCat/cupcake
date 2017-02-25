@@ -39,6 +39,15 @@ update msg model =
                     Login.update loginMsg model.login
             in
                 ( { model | login = loginModel }, (Cmd.map Login loginEffects) )
+                    |> forward loginMsg
+                        (\msg model ->
+                            case msg of
+                                Session.Inactive.Login.Types.PromptCredentials ->
+                                    update (Register Session.Inactive.Register.Types.DismissDetails) model
+
+                                _ ->
+                                    ( model, Cmd.none )
+                        )
 
         Register registerMsg ->
             let
@@ -46,6 +55,15 @@ update msg model =
                     Register.update registerMsg model.register
             in
                 ( { model | register = registerModel }, (Cmd.map Register registerEffects) )
+                    |> forward registerMsg
+                        (\msg model ->
+                            case msg of
+                                Session.Inactive.Register.Types.PromptDetails ->
+                                    update (Login Session.Inactive.Login.Types.DismissCredentials) model
+
+                                _ ->
+                                    ( model, Cmd.none )
+                        )
 
 
 subscriptions : Model -> Sub Msg
