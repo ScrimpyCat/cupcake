@@ -36,6 +36,15 @@ update msg model =
                     Logout.update logoutMsg model.logout model.session
             in
                 ( { model | logout = logoutModel }, (Cmd.map Logout logoutEffects) )
+                    |> forward logoutMsg
+                        (\msg model ->
+                            case msg of
+                                Session.Active.Logout.Types.RevokeSession (Ok _) ->
+                                    ( { model | session = "" }, Cmd.none )
+
+                                _ ->
+                                    ( model, Cmd.none )
+                        )
 
 
 subscriptions : Model -> Sub Msg
