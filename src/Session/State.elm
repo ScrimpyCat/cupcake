@@ -4,6 +4,7 @@ import Session.Types exposing (..)
 import Session.Active.State as Active
 import Session.Inactive.State as Inactive
 import Session.Active.Types
+import Session.Active.Logout.Types
 import Session.Inactive.Types
 import Session.Inactive.Login.Types
 import Session.Inactive.Register.Types
@@ -40,6 +41,19 @@ update msg model =
                                 Active.update activeMsg activeModel
             in
                 ( (ActiveSession activeModel), (Cmd.map Active activeEffects) )
+                    |> forward activeMsg
+                        (\msg model ->
+                            case msg of
+                                Session.Active.Types.Logout (Session.Active.Logout.Types.RevokeSession (Ok token)) ->
+                                    let
+                                        ( inactiveModel, inactiveEffects ) =
+                                            Inactive.init
+                                    in
+                                        ( (InactiveSession inactiveModel), (Cmd.map Inactive inactiveEffects) )
+
+                                _ ->
+                                    ( model, Cmd.none )
+                        )
 
         Inactive inactiveMsg ->
             let
