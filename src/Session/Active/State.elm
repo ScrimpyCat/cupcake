@@ -3,6 +3,8 @@ module Session.Active.State exposing (..)
 import Session.Active.Types exposing (..)
 import Session.Active.Logout.State as Logout
 import Session.Active.Logout.Types
+import Session.Active.Profile.State as Profile
+import Session.Active.Profile.Types
 import Util exposing (..)
 
 
@@ -12,13 +14,18 @@ init =
         ( logoutModel, logoutEffects ) =
             Logout.init
 
+        ( profileModel, profileEffects ) =
+            Profile.init
+
         effects =
             Cmd.batch
                 [ Cmd.map Logout logoutEffects
+                , Cmd.map Profile profileEffects
                 ]
     in
         ( { session = ""
           , logout = logoutModel
+          , profile = profileModel
           }
         , effects
         )
@@ -29,6 +36,7 @@ update msg model =
     case msg of
         NewSession session ->
             ( { model | session = session }, Cmd.none )
+                |> forward (Profile Session.Active.Profile.Types.GetDetails) update
 
         Logout logoutMsg ->
             let
@@ -46,9 +54,17 @@ update msg model =
                                     ( model, Cmd.none )
                         )
 
+        Profile profileMsg ->
+            let
+                ( profileModel, profileEffects ) =
+                    Profile.update (Debug.log ">" profileMsg) model.profile model.session
+            in
+                ( { model | profile = profileModel }, (Cmd.map Profile profileEffects) )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map Logout (Logout.subscriptions model.logout)
+        , Sub.map Profile (Profile.subscriptions model.profile)
         ]
